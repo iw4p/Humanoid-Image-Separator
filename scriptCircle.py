@@ -5,6 +5,9 @@ import numpy as np
 import cv2
 import math
 
+pathArray = []
+counter = 2
+
 def coord(x,y):
     "Convert world coordinates to pixel coordinates."
     return int(450+170*x), int(300-170*y)
@@ -31,6 +34,7 @@ def getData(root, shouldShowField):
                         angleRobotPose = float(data["RobotPose"]["angle"])
 
                         jpgFiles = (jsonToJPG(os.path.join(path, name)))
+                        pathArray.append(jpgFiles)
                         showImage(jpgFiles,destPath, x_corBall, y_corBall, radius, detected)
                         key = cv2.waitKey(0)
                         if shouldShowField is True:
@@ -80,7 +84,44 @@ def jsonToJPG(path):
     path = path.strip('.json')
     path = path + ".jpg"
     return path
+
+def writeToFile(path):
+    file1 = open(destPath,"a")
+    file1.write(path + "\n") 
+    file1.close() 
                      
+def lastImage():
+    
+
+    
+    global counter
+
+    lastIndex = pathArray[-(counter)]
+    print(pathArray)
+    print(lastIndex)
+
+    img = cv2.imread(lastIndex)
+    cv2.imshow(lastIndex,img)
+    key = cv2.waitKey(0)
+    if key == 102 or key == 70:         # It's F button to save
+        print(lastIndex + " added succressfully")
+        writeToFile(lastIndex)
+    cv2.destroyAllWindows()
+    counter += 1
+    
+    if key == 27:
+        cv2.destroyAllWindows()         # It's escape button to exit
+        counter = 2
+
+    if key == 98 or key == 66:         # It's B button to back
+        print("its me")
+        print(counter)
+        if key == 102 or key == 70:         # It's F button to save
+            print(path + " added succressfully")
+            writeToFile(lastIndex)
+        lastImage()
+
+        cv2.destroyAllWindows()
 
 def showImage(path, destPath, x_cor, y_cor, radius, ballDetected):
     img = cv2.imread(path)
@@ -96,13 +137,17 @@ def showImage(path, destPath, x_cor, y_cor, radius, ballDetected):
         exit()
     if key == 102 or key == 70:         # It's F button to save
         print(path + " added succressfully")
-        file1 = open(destPath,"a")
-        file1.write(path + "\n") 
-        file1.close() 
+        writeToFile(path)
         cv2.destroyAllWindows()
     if key == 106 or key == 74:         # It's J button to skip
         print(path + " dismissed")
         cv2.destroyAllWindows()
+    if key == 98 or key == 66:         # It's B button to back
+
+        lastImage()
+        cv2.destroyAllWindows()
+
+
 
     cv2.destroyAllWindows()
                 
