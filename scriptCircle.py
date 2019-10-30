@@ -21,33 +21,32 @@ def getData(root, shouldShowField):
                     fh = open(pathJson)
                     data = json.load(fh)
                     detected = data["Ball"]["detected"]
-                    if detected == "1":
-                        with open(pathJson) as json_file:
-                            data = json.load(json_file)
-                            x_corBall = int(data["Ball"]["x"])
-                            y_corBall = int(data["Ball"]["y"])
-                            radius = int(data["Ball"]["r"])
-                            x_corRobotPose = float(data["RobotPose"]["x"])
-                            y_corRobotPose = float(data["RobotPose"]["y"])
-                            angleRobotPose = float(data["RobotPose"]["angle"])
+                    with open(pathJson) as json_file:
+                        data = json.load(json_file)
+                        x_corBall = int(data["Ball"]["x"])
+                        y_corBall = int(data["Ball"]["y"])
+                        radius = int(data["Ball"]["r"])
+                        x_corRobotPose = float(data["RobotPose"]["x"])
+                        y_corRobotPose = float(data["RobotPose"]["y"])
+                        angleRobotPose = float(data["RobotPose"]["angle"])
 
-                            jpgFiles = (jsonToJPG(os.path.join(path, name)))
-                            showImage(jpgFiles,destPath, x_corBall, y_corBall, radius)
-                            key = cv2.waitKey(0)
-                            if shouldShowField is True:
-                                drawField(x_corRobotPose,y_corRobotPose,angleRobotPose) 
-                            
-                            # # DEBUG
-                            # print(path + name + " exists")
-                            # print(x_corBall, y_corBall, radius)
-                            # print(x_corRobotPose, y_corRobotPose, angleRobotPose)
-                            # print(jsonToJPG(os.path.join(path, name)))
-                            # jsonSize = os.path.getsize(pathJson)
-                            # print("Size of json is : " + str(jsonSize))
-                            # print("Size of image is : " + str(FileSize))
-                            # fileExistsBool = os.path.isfile(jsonToJPG(os.path.join(path, name)))
-                            # FileSize = os.path.getsize(jsonToJPG(os.path.join(path, name)))
-                            # # DEBUG
+                        jpgFiles = (jsonToJPG(os.path.join(path, name)))
+                        showImage(jpgFiles,destPath, x_corBall, y_corBall, radius, detected)
+                        key = cv2.waitKey(0)
+                        if shouldShowField is True:
+                            drawField(x_corRobotPose,y_corRobotPose,angleRobotPose) 
+                        
+                        # # DEBUG
+                        # print(path + name + " exists")
+                        # print(x_corBall, y_corBall, radius)
+                        # print(x_corRobotPose, y_corRobotPose, angleRobotPose)
+                        # print(jsonToJPG(os.path.join(path, name)))
+                        # jsonSize = os.path.getsize(pathJson)
+                        # print("Size of json is : " + str(jsonSize))
+                        # print("Size of image is : " + str(FileSize))
+                        # fileExistsBool = os.path.isfile(jsonToJPG(os.path.join(path, name)))
+                        # FileSize = os.path.getsize(jsonToJPG(os.path.join(path, name)))
+                        # # DEBUG
 
 
                         
@@ -83,13 +82,13 @@ def jsonToJPG(path):
     return path
                      
 
-def showImage(path, destPath, x_cor, y_cor, radius):
-    
+def showImage(path, destPath, x_cor, y_cor, radius, ballDetected):
     img = cv2.imread(path)
-    center_coordinates = (x_cor*2, y_cor*2) 
-    color = (0, 0, 255) 
-    thickness = 2
-    cv2.circle(img, center_coordinates, radius*2, color, thickness)
+    if ballDetected:
+        center_coordinates = (x_cor*2, y_cor*2) 
+        color = (0, 0, 255) 
+        thickness = 2
+        cv2.circle(img, center_coordinates, radius*2, color, thickness)
     cv2.imshow(path,img)
     key = cv2.waitKey(0)
     if key == 27:
@@ -110,7 +109,7 @@ def showImage(path, destPath, x_cor, y_cor, radius):
 # print("Enter the directory: ")
 # p = raw_input() 
 
-path = "/Address/"
+path = "/media/rider/New Volume/Arshia/Logs-2019-RoboCup/Amir/2019-06-01-13-22"
 
 destPath = (path + "file.txt")
 
