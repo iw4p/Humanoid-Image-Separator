@@ -121,7 +121,6 @@ def showImage(path, destPath, x_cor, y_cor, radius, ballDetected):
         counter = 2
         while isBackOn:
             lastIndex = pathArray[-(counter)]
-            print(pathArray)
             cv2.namedWindow('back'+lastIndex,cv2.WINDOW_AUTOSIZE)
             img = cv2.imread(lastIndex)
             cv2.imshow('back'+lastIndex,img)
