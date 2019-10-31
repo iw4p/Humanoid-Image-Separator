@@ -93,39 +93,6 @@ def writeToFile(path):
     file1 = open(destPath,"a")
     file1.write(path + "\n") 
     file1.close() 
-                     
-def lastImage():
-    
-
-    
-    global counter
-    
-    lastIndex = pathArray[-(counter)]
-    print(pathArray)
-    print(lastIndex)
-
-    img = cv2.imread(lastIndex)
-    cv2.imshow(lastIndex,img)
-    key = cv2.waitKey(0)
-    if key == 102 or key == 70:         # It's F button to save
-        print(lastIndex + " added succressfully")
-        writeToFile(lastIndex)
-    cv2.destroyAllWindows()
-    counter += 1
-    
-    if key == 27:
-        cv2.destroyAllWindows()         # It's escape button to exit
-        counter = 2
-
-    if key == 98 or key == 66:         # It's B button to back
-        print("its me")
-        print(counter)
-        if key == 102 or key == 70:         # It's F button to save
-            print(path + " added succressfully")
-            writeToFile(lastIndex)
-        lastImage()
-
-        cv2.destroyAllWindows()
 
 def showImage(path, destPath, x_cor, y_cor, radius, ballDetected):
     cv2.namedWindow(path,cv2.WINDOW_AUTOSIZE)
