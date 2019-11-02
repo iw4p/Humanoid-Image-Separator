@@ -5,18 +5,28 @@ import numpy as np
 import cv2
 import math
 
+path = "/home/n1m4/Desktop/tasks/OpenCV"
 pathArray = []
 counter = 2
 isBackOn = False
+subDirArray = []
+counterNextDir = 0
+
 
 def coord(x,y):
     "Convert world coordinates to pixel coordinates."
     return int(450+170*x), int(300-170*y)
 
+# getting the name of dirs
+current_directory = path
+for dir in os.listdir(current_directory):
+    if os.path.isdir(os.path.join(current_directory, dir)):
+        subDirArray.append("/" + dir)
 
 def getData(root, shouldShowField):
-    
-    for path, subdirs, files in os.walk(root):
+    global subDirArray
+    print(subDirArray)
+    for path, subdirs ,files in os.walk(root):
         for name in files:
             if fnmatch(name, "*.json"):
                 pathJson = os.path.join(path, name)
@@ -33,17 +43,16 @@ def getData(root, shouldShowField):
                         x_corRobotPose = float(data["RobotPose"]["x"])
                         y_corRobotPose = float(data["RobotPose"]["y"])
                         angleRobotPose = float(data["RobotPose"]["angle"])
-
                         jpgFiles = (jsonToJPG(os.path.join(path, name)))
                         pathArray.append(jpgFiles)
                         if isBackOn is False:
 
                             showImage(jpgFiles,destPath, x_corBall, y_corBall, radius, detected)
-                            key = cv2.waitKey(0)
+
                             if shouldShowField is True:
                                 drawField(x_corRobotPose,y_corRobotPose,angleRobotPose) 
                         
-                        1
+                        
                         # # DEBUG
                         # print(path + name + " exists")
                         # print(x_corBall, y_corBall, radius)
@@ -91,13 +100,18 @@ def jsonToJPG(path):
 
 def writeToFile(path):
     file1 = open(destPath,"a")
+    print("ADDDDDDDD")
     file1.write(path + "\n") 
     file1.close() 
 
 def showImage(path, destPath, x_cor, y_cor, radius, ballDetected):
+    global counter
+    global current_directory
+    global counterNextDir
+    global isBackOn
     cv2.namedWindow(path,cv2.WINDOW_AUTOSIZE)
     img = cv2.imread(path)
-    if ballDetected:
+    if ballDetected=="1":
         center_coordinates = (x_cor*2, y_cor*2) 
         color = (0, 0, 255) 
         thickness = 2
@@ -114,16 +128,39 @@ def showImage(path, destPath, x_cor, y_cor, radius, ballDetected):
     if key == 106 or key == 74:         # It's J button to skip
         print(path + " dismissed")
         cv2.destroyAllWindows()
+    if key == 39 or key == 83:         # It's Right Arrow button to next dir
+        try:
+            print(counter)
+            cv2.destroyAllWindows()
+            print(current_directory + subDirArray[counterNextDir] + " NEXT DIR")
+            counterNextDir += 1
+            cv2.destroyAllWindows()
+            getData(current_directory + subDirArray[counterNextDir], shouldShowFieldState)
+        except IndexError:
+            counterNextDir = 0
+            
+        
+    if key == 37 or key == 81:         # It's Left Arrow button to previus dir
+        try:
+            print(counter)
+            cv2.destroyAllWindows()
+            print(current_directory + subDirArray[counterNextDir] + " PREVIUS DIR")
+            counterNextDir -= 1
+            cv2.destroyAllWindows()
+            getData(current_directory + subDirArray[counterNextDir], shouldShowFieldState)
+        except IndexError:
+            counterNextDir = 0
+            print(counterNextDir)
+            pass
+            
     if key == 98 or key == 66:         # It's B button to back
-        global isBackOn
         isBackOn = True
-        global counter
         counter = 2
         while isBackOn:
             lastIndex = pathArray[-(counter)]
-            cv2.namedWindow('back'+lastIndex,cv2.WINDOW_AUTOSIZE)
+            cv2.namedWindow('back '+lastIndex,cv2.WINDOW_AUTOSIZE)
             img = cv2.imread(lastIndex)
-            cv2.imshow('back'+lastIndex,img)
+            cv2.imshow('back '+lastIndex,img)
             key = cv2.waitKey(0)
             counter += 1
             if key == 27:
@@ -144,11 +181,8 @@ def showImage(path, destPath, x_cor, y_cor, radius, ballDetected):
 # print("Enter the directory: ")
 # p = raw_input() 
 
-path = "Desktop//Scripts/testFile"
-
-destPath = (path + "file.txt")
-
+destPath = (path + "/file.txt")
+print("PATH FOR SAVING IS " + path)
 shouldShowFieldState = False
 
 getData(path, shouldShowFieldState)
-
